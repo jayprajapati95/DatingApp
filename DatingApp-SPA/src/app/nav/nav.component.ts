@@ -27,7 +27,7 @@ export class NavComponent implements OnInit {
         // anonymous function: An anonymous function is a function that is not stored in a program file,
         // but is associated with a variable whose data type is function_handle .
         // Anonymous functions can accept inputs and return outputs, just as standard functions do
-        this.router.navigate(['/members']);
+        this.router.navigate(['/members']); // after login it will redirect to member list page
       }
     );
   }
