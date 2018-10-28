@@ -1,3 +1,5 @@
+import { PreventUnsavedChanges } from './_guards/prevent-unsaved-changes.guard';
+import { MemberEditResolver } from './_resolvers/member-edit.resolver';
 import { MemberDetailResolver } from './_resolvers/member-detail.resolver';
 import { AuthGuard } from './_guards/auth.guard';
 import { ListsComponent } from './lists/lists.component';
@@ -7,6 +9,7 @@ import { MemberListComponent } from './members/member-list/member-list.component
 import { MessagesComponent } from './messages/messages.component';
 import { MemberDetailComponent } from './members/member-detail/member-detail.component';
 import { MemberListResolver } from './_resolvers/member-list.resolver';
+import { MemberEditComponent } from './members/member-edit/member-edit.component';
 
 export const appRoutes: Routes = [
     // NoTE: Order is Important and alway put wildcart at least of all routes
@@ -20,6 +23,8 @@ export const appRoutes: Routes = [
                 resolve: {users: MemberListResolver}},
             { path: 'members/:id', component: MemberDetailComponent,
                 resolve: {user: MemberDetailResolver}},
+            { path: 'member/edit', component: MemberEditComponent,
+                 resolve: {user: MemberEditResolver}, canDeactivate: [PreventUnsavedChanges]},
             { path: 'messages', component: MessagesComponent},
             { path: 'lists', component: ListsComponent},
         ]
