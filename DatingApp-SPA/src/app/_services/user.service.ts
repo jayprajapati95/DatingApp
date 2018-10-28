@@ -4,11 +4,12 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../_models/user';
 
-const httpOption = { // we use httpOption because we need to pass token so we are making this 
-  headers: new HttpHeaders({
-    'Authorization': 'Bearer ' + localStorage.getItem('token')
-  })
-};
+// const httpOption = { // we use httpOption because we need to pass token so we are making this 
+ // headers: new HttpHeaders({
+  //  'Authorization': 'Bearer ' + localStorage.getItem('token')
+  // })
+// };
+// Commetn: we use JwtModule to send token automatically so we commented this .
 
 
 @Injectable({
@@ -21,10 +22,11 @@ constructor(private http: HttpClient) { }
 getUsers(): Observable<User[]> {
   // we want users so using type observable with User model
   // we are returning array that's why using User model with array
-  return this.http.get<User[]>(this.baseUrl + 'user', httpOption);
+ // return this.http.get<User[]>(this.baseUrl + 'user', httpOption);
+  return this.http.get<User[]>(this.baseUrl + 'user');
 }
 getUser(id): Observable<User> {
-  return this.http.get<User>(this.baseUrl + 'user/' + id, httpOption);
-}
+    return this.http.get<User>(this.baseUrl + 'user/' + id);
+  }
 
 }
