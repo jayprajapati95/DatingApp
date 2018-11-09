@@ -14,6 +14,7 @@ import { NgForm } from '@angular/forms';
 export class MemberEditComponent implements OnInit {
   @ViewChild('editForm') editForm: NgForm; // after update for resert we call out form here 
   user: User;
+  photoUrl: string;
   @HostListener('window:beforeunload', ['$event'])
   unloadNotification($event: any) {
     // this method is used to prevent user to close browser if form control value is changed
@@ -29,6 +30,7 @@ export class MemberEditComponent implements OnInit {
     this.route.data.subscribe(data => {
       this.user = data['user'];
   });
+  this.authService.currentPhotoUrl.subscribe(photoUrl => this.photoUrl = photoUrl);
 }
   updateUser() {
     this.userService.updateUser(this.authService.decodedToken.nameid, this.user)
@@ -38,5 +40,8 @@ export class MemberEditComponent implements OnInit {
       }, error => {
         this.alertify.error(error);
       });
+  }
+  updateMainPhoto(photoUrl) {
+    this.user.photoUrl = photoUrl;
   }
 }
