@@ -18,12 +18,16 @@ export class PhotoEditorComponent implements OnInit {
   hasBaseDropZoneOver = false;
   baseUrl = environment.apiUrl;
   currentMain: Photo;
+  showLoadingProcess: Boolean = false;
 
-  constructor(private authService: AuthService, private userService: UserService ,
-    private alertify: AlertifyService) { }
+  constructor(
+    private authService: AuthService,
+    private userService: UserService,
+    private alertify: AlertifyService
+  ) {}
 
   ngOnInit() {
-    this. initializeUploader();
+    this.initializeUploader();
   }
 
   fileOverBase(e: any): void {
@@ -32,7 +36,11 @@ export class PhotoEditorComponent implements OnInit {
 
   initializeUploader() {
     this.uploader = new FileUploader({
-      url: this.baseUrl + 'users/' + this.authService.decodedToken.nameid + '/photos',
+      url:
+        this.baseUrl +
+        'users/' +
+        this.authService.decodedToken.nameid +
+        '/photos',
       authToken: 'Bearer ' + localStorage.getItem('token'),
       isHTML5: true,
       allowedFileType: ['image'],
@@ -40,7 +48,9 @@ export class PhotoEditorComponent implements OnInit {
       autoUpload: false,
       maxFileSize: 10 * 1024 * 1024
     });
-    this.uploader.onAfterAddingFile = (file) => {file.withCredentials = false; };
+    this.uploader.onAfterAddingFile = file => {
+      file.withCredentials = false;
+    };
 
     this.uploader.onSuccessItem = (item, response, status, headers) => {
       if (response) {
@@ -53,39 +63,58 @@ export class PhotoEditorComponent implements OnInit {
           isMain: res.isMain
         };
         this.photos.push(photo);
+        if (photo.isMain) {
+          this.authService.currentUser.photoUrl = photo.url;
+          localStorage.setItem('user', JSON.stringify(this.authService.currentUser));
+        }
       }
     };
   }
   setMainPhoto(photo: Photo) {
     //this.currentMain = this.photos.filter(p => p.isMain === true)[0];
     //this.currentMain.isMain = false;
-   // photo.isMain = true;
-   // this.authService.changeMemberPhoto(photo.url);
-   // this.authService.currentUser.photoUrl = photo.url;
+    // photo.isMain = true;
+    // this.authService.changeMemberPhoto(photo.url);
+    // this.authService.currentUser.photoUrl = photo.url;
     //localStorage.setItem('user', JSON.stringify(this.authService.currentUser));
-      this.userService.setMainPhoto(this.authService.decodedToken.nameid, photo.id)
-        .subscribe(() => {
+    this.showLoadingProcess = true;
+    this.userService
+      .setMainPhoto(this.authService.decodedToken.nameid, photo.id)
+      .subscribe(
+        () => {
           this.currentMain = this.photos.filter(p => p.isMain === true)[0];
           this.currentMain.isMain = false;
           photo.isMain = true;
           //this.getMemberPhotoChange.emit(photo.url);
           this.authService.changeMemberPhoto(photo.url);
           this.authService.currentUser.photoUrl = photo.url;
-          localStorage.setItem('user', JSON.stringify(this.authService.currentUser));
-          console.log('Done');
-        }, error => {
-            this.alertify.error(error);
-        });
+          localStorage.setItem(
+            'user',
+            JSON.stringify(this.authService.currentUser)
+          );
+          this.showLoadingProcess = false;
+        },
+        error => {
+          this.alertify.error(error);
+          this.showLoadingProcess = false;
+        }
+      );
   }
   deletePhoto(id: number) {
     this.alertify.confirm('Are you sure do you want to delete?', () => {
-      this.userService.deletePhoto(this.authService.decodedToken.nameid, id)
-      .subscribe(() => {
-        this.photos.splice(this.photos.findIndex(p => p.id === id), 1);
-        this.alertify.success('Deleted');
-      }, error => {
-          this.alertify.error(error);
-      });
+      this.showLoadingProcess = true;
+      this.userService
+        .deletePhoto(this.authService.decodedToken.nameid, id)
+        .subscribe(
+          () => {
+            this.photos.splice(this.photos.findIndex(p => p.id === id), 1);
+            this.showLoadingProcess = false;
+            this.alertify.success('Deleted');
+          },
+          error => {
+            this.alertify.error(error);
+          }
+        );
     });
   }
 }

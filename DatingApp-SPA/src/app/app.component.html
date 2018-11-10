@@ -1,3 +1,6 @@
-<!--The content below is only a placeholder and can be replaced.-->
+<!-- The content below is only a placeholder and can be replaced. -->
 <app-nav></app-nav>
 <router-outlet></router-outlet>
+<div *ngIf="showLoadingProcess" class="spinner">
+  <app-LoadingProcess></app-LoadingProcess>
+</div>

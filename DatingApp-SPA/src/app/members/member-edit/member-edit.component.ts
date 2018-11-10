@@ -15,6 +15,7 @@ export class MemberEditComponent implements OnInit {
   @ViewChild('editForm') editForm: NgForm; // after update for resert we call out form here 
   user: User;
   photoUrl: string;
+  showLoadingProcess: Boolean = false;
   @HostListener('window:beforeunload', ['$event'])
   unloadNotification($event: any) {
     // this method is used to prevent user to close browser if form control value is changed
@@ -28,20 +29,24 @@ export class MemberEditComponent implements OnInit {
 
   ngOnInit() {
     this.route.data.subscribe(data => {
-      this.user = data['user'];
+      this.user = data['user']; 
   });
   this.authService.currentPhotoUrl.subscribe(photoUrl => this.photoUrl = photoUrl);
 }
   updateUser() {
+    this.showLoadingProcess = true;
     this.userService.updateUser(this.authService.decodedToken.nameid, this.user)
       .subscribe(next => {
         this.alertify.success('Profile updated successfully');
         this.editForm.reset(this.user);
+        this.showLoadingProcess = false;
       }, error => {
         this.alertify.error(error);
       });
   }
   updateMainPhoto(photoUrl) {
+    this.showLoadingProcess = true;
     this.user.photoUrl = photoUrl;
+    this.showLoadingProcess = false;
   }
 }
