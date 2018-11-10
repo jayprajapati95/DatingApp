@@ -7,6 +7,8 @@ import { RouterModule } from '@angular/Router';
 import { JwtModule } from '@auth0/angular-jwt';
 import { NgxGalleryModule } from 'ngx-gallery';
 import { FileUploadModule } from 'ng2-file-upload';
+import { appRoutes } from './routes';
+import {TimeAgoPipe} from 'time-ago-pipe';
 
 import { AppComponent } from './app.component';
 import { NavComponent } from './nav/nav.component';
@@ -28,9 +30,7 @@ import { MemberEditComponent } from './members/member-edit/member-edit.component
 import { PreventUnsavedChanges } from './_guards/prevent-unsaved-changes.guard';
 import { PhotoEditorComponent } from './members/photo-editor/photo-editor.component';
 import { MemberEditResolver } from './_resolvers/member-edit.resolver';
-import { appRoutes } from './routes';
 import { LoadingProcessComponent } from './LoadingProcess/LoadingProcess.component';
-
 
 export function tokenGetter() {
     return localStorage.getItem('token');
@@ -49,7 +49,8 @@ export function tokenGetter() {
       MemberDetailComponent,
       MemberEditComponent,
       PhotoEditorComponent,
-      LoadingProcessComponent
+      LoadingProcessComponent,
+      TimeAgoPipe
    ],
    imports: [
       BrowserModule,
