@@ -1,3 +1,4 @@
+import { Pagination, PaginatedResult } from './../../_models/pagination';
 import { Component, OnInit } from '@angular/core';
 import { User } from '../../_models/user';
 import { AlertifyService } from '../../_services/Alertify.service';
@@ -11,6 +12,11 @@ import { ActivatedRoute } from '@angular/Router';
 })
 export class MemberListComponent implements OnInit {
   users: User[];
+  user: User = JSON.parse(localStorage.getItem('user'));
+  genderList = [{value: 'male', display: 'Males'}, {value: 'female', display: 'Females'}];
+  userParams: any = {};
+  pagination: Pagination;
+  showLoadingProcess: Boolean = false;
 
   constructor(private userService: UserService, private alertify: AlertifyService,
     private route: ActivatedRoute) { }
@@ -18,15 +24,37 @@ export class MemberListComponent implements OnInit {
   ngOnInit() {
     // this.loadUsers();
     this.route.data.subscribe(data => {
-      this.users = data['users'];
+      this.users = data['users'].result;
+      this.pagination = data['users'].pagination;
     });
+
+    this.userParams.gender = this.user.gender === 'female' ? 'male' : 'female';
+    this.userParams.minAge = 18;
+    this.userParams.maxAge = 99;
+    this.userParams.orderBy = 'lastActive';
   }
 
-  // loadUsers() {
-  //  this.userService.getUsers().subscribe((users: User[]) => {
-   //   this.users = users;
-  //  }, error => {
-  //    this.alertify.error(error);
-  //  });
- // }
+  resetFilter() {
+    this.userParams.gender = this.user.gender === 'female' ? 'male' : 'female';
+    this.userParams.minAge = 18;
+    this.userParams.maxAge = 99;
+    this.userParams.orderBy = 'lastActive';
+    this.loadUsers();
+  }
+
+  pageChanged(event: any): void {
+    this.pagination.currentPage = event.page;
+    this.loadUsers();
+  }
+   loadUsers() {
+    this.showLoadingProcess = true;
+    this.userService.getUsers(this.pagination.currentPage, this.pagination.itemsPerPage, this.userParams)
+      .subscribe((res: PaginatedResult<User[]>) => {
+      this.users = res.result;
+      this.pagination = res.pagination;
+      this.showLoadingProcess = false;
+    }, error => {
+      this.alertify.error(error);
+    });
+  }
 }
