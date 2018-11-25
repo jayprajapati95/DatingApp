@@ -77,7 +77,7 @@ namespace DatingApp.API.Data
                 var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1);
                 var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
 
-                user = user.Where(u => u.DateOfBitrh >=minDob && u.DateOfBitrh <= maxDob);
+                user = user.Where(u => u.DateOfBirth >=minDob && u.DateOfBirth <= maxDob);
              }
              if (!string.IsNullOrEmpty(userParams.OrderBy))
              {
